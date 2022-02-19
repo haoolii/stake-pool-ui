@@ -1,8 +1,16 @@
 import "./App.css";
 import Pool from "./components/Pool";
 import Header from "./components/Header";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { initWeb3 } from "./redux/web3/web3.action.creators";
 
 function App() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(initWeb3());
+  }, []);
+  
   return (
     <>
       <div className="h-full relative">
@@ -12,7 +20,7 @@ function App() {
             <Pool />
           </div>
         </div>
-
+        
         <div className="absolute w-full h-full top-0 left-0 z-0 flex items-center justify-center">
           <div className="relative container mx-auto">
             <div className="w-96 h-96 -top-14 right-20 absolute bg-purple-300 rounded-full mix-blend-multiply blur-3xl filter opacity-70 transform animate-blob"></div>
