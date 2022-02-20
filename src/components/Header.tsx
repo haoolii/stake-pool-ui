@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { Link, LinkProps, useMatch, useResolvedPath } from "react-router-dom";
 import { RooState } from "../redux/combile";
 import { State } from "../redux/web3/web3.reducer";
 
@@ -19,14 +20,10 @@ export default function Header() {
       <div className="w-full flex justify-between">
         <div className="flex space-x-4 py-4">
           <div>
-            <button className="leading-5 text-sm rounded-lg text-slate-600 font-bold hover:bg-slate-200 py-2 px-4">
-              Logo
-            </button>
+            <CustomLink to="/">Logo</CustomLink>
           </div>
           <div>
-            <button className="leading-5 text-sm rounded-lg text-slate-600 font-bold hover:bg-slate-200 py-2 px-4">
-              Stake
-            </button>
+            <CustomLink to="/stake">Stake</CustomLink>
           </div>
           <div>
             <button className="leading-5 text-sm rounded-lg text-slate-600 font-bold hover:bg-slate-200 py-2 px-4">
@@ -46,6 +43,23 @@ export default function Header() {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function CustomLink({ children, to, ...props }: LinkProps) {
+  let resolved = useResolvedPath(to);
+  let match = useMatch({ path: resolved.pathname, end: true });
+
+  return (
+    <div className="flex items-center">
+      <Link
+        className={`leading-5 text-sm rounded-lg text-slate-600 font-bold hover:bg-slate-200 py-2 px-4 ${match ? 'bg-slate-200' : ''}`}        
+        to={to}
+        {...props}
+      >
+        {children}
+      </Link>
     </div>
   );
 }

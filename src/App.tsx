@@ -1,9 +1,12 @@
 import "./App.css";
-import Pool from "./components/Pool";
 import Header from "./components/Header";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { Routes, Route, Link } from "react-router-dom";
+
 import { initWeb3 } from "./redux/web3/web3.action.creators";
+import Stake from "./page/Stake";
+import { Home } from "./page/Home";
 
 function App() {
   const dispatch = useDispatch();
@@ -17,7 +20,10 @@ function App() {
         <div className="container mx-auto h-full w-full relative z-10">
           <Header />
           <div className="flex justify-center items-center h-full">
-            <Pool />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="stake" element={<Stake />} />
+            </Routes>
           </div>
         </div>
         
