@@ -1,7 +1,8 @@
-import { Dispatch } from "redux";
-import Web3 from "web3";
-import { Action, ActionType } from "../action.types";
-import Hao from "../../contracts/Hao.json";
+import { Dispatch } from 'redux';
+import Web3 from 'web3';
+import { Action, ActionType } from '../action.types';
+import Hao from '../../contracts/Hao.json';
+import { RootState } from '../combile';
 
 declare const window: any;
 
@@ -20,7 +21,7 @@ export const initWeb3 = () => {
       } else if (window.web3) {
         web3 = new Web3(window.web3.currentProvider);
       } else {
-        alert("No ethereum browser detected! You can check out MetaMask!");
+        alert('No ethereum browser detected! You can check out MetaMask!');
       }
 
       dispatch({
@@ -46,17 +47,32 @@ export const initWeb3 = () => {
       const haoData = (Hao.networks as any)[`${networkId}`];
 
       if (haoData && web3) {
-        const hao = new web3.eth.Contract(Hao.abi as any, haoData.address);      
-        let haoBalance = await hao.methods.balanceOf(account).call();
+        const hao = new web3.eth.Contract(Hao.abi as any, haoData.address);
         dispatch({
-          type: ActionType.SET_HAO_BALANCE,
-          payload: haoBalance,
+          type: ActionType.SET_HAO_CONTRACT,
+          payload: hao,
         });
+        dispatch(getHaoBalance() as any);
       }
     } catch (err) {
       dispatch({
         type: ActionType.INIT_WEB3_FAIL,
-        payload: "INIT_WEB3_FAIL",
+        payload: 'INIT_WEB3_FAIL',
+      });
+    }
+  };
+};
+
+export const getHaoBalance = () => {
+  return async (dispatch: Dispatch<Action>, getState: () => RootState) => {
+    const state = getState();
+    const hao = state.web3.hao;
+    const account = state.web3.account;
+    if (hao && account) {
+      let haoBalance = await hao.methods.balanceOf(account).call();
+      dispatch({
+        type: ActionType.SET_HAO_BALANCE,
+        payload: haoBalance,
       });
     }
   };

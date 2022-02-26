@@ -1,7 +1,10 @@
 import Web3 from "web3";
 import { Action, ActionType } from "../action.types";
+import { Contract } from 'web3-eth-contract';
+
 export interface State {
   web3: Web3 | null;
+  hao: Contract | null;
   account: string | null;
   networkId: number | null;
   haoBalance: number;
@@ -11,6 +14,7 @@ export interface State {
 
 const initialState: State = {
   web3: null,
+  hao: null,
   account: null,
   networkId: null,
   haoBalance: 0,
@@ -53,6 +57,11 @@ const reducer = (state = initialState, action: Action): State => {
         ...state,
         haoBalance: action.payload,
       };
+    case ActionType.SET_HAO_CONTRACT:
+      return {
+        ...state,
+        hao: action.payload
+      }
     default:
       return state;
   }

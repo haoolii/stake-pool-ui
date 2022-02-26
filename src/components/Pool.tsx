@@ -1,20 +1,23 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RooState } from "../redux/combile";
+import { RootState } from "../redux/combile";
 import * as Web3Reducer from "../redux/web3/web3.reducer";
 import * as PoolReducer from "../redux/pool/pool.reducer";
-import { getPool } from "../redux/pool/pool.action.createors";
+import { getPool, stake, unstake } from "../redux/pool/pool.action.createors";
+import StakeDialog from "./StakeDialog";
+import { ActionType } from "../redux/action.types";
+import UnStakeDialog from "./UnStakeDialog";
 
 export default function Pool() {
   const dispatch = useDispatch();
 
   const { web3, loading, error, account, haoBalance } = useSelector<
-    RooState,
+    RootState,
     Web3Reducer.State
   >((state) => state.web3);
 
-  const { apr, totalStaked, dailyReward, accountStaked, accountReward } =
-    useSelector<RooState, PoolReducer.State>((state) => state.pool);
+  const { apr, totalStaked, dailyReward, accountStaked, accountReward, staking, unStaking } =
+    useSelector<RootState, PoolReducer.State>((state) => state.pool);
 
   let aprDisplay = (apr * 100).toPrecision(4);
 
@@ -32,6 +35,42 @@ export default function Pool() {
     setTimeout(() => dispatch(getPool()), 500);
     return () => {};
   }, [web3]);
+
+  const onStake = (amount: number) => {
+    if (web3) {
+      dispatch(stake(web3.utils.toWei(`${amount}`)));
+    }
+  }
+
+  const onUnStake = () => {
+    if (web3) {
+      dispatch(unstake());
+    }
+  }
+
+  const closeStaking = () => {
+    dispatch({
+      type: ActionType.CLOSE_STAKING
+    })
+  }
+
+  const closeUnStaking = () => {
+    dispatch({
+      type: ActionType.CLOSE_UNSTAKING
+    })
+  }
+
+  const openStaking = () => {
+    dispatch({
+      type: ActionType.OPEN_STAKING
+    })
+  }
+
+  const openUnStaking = () => {
+    dispatch({
+      type: ActionType.OPEN_UNSTAKING
+    })
+  }
 
   return (
     <div className="bg-slate-200/40  backdrop-blur rounded-2xl h-[478px] w-[468px] p-8 space-y-4 flex flex-col">
@@ -94,13 +133,15 @@ export default function Pool() {
       </div>
 
       <div className="flex flex-col space-y-4">
-        <button className="py-3 bg-slate-400 rounded-md text-white">
+        <button className="py-3 bg-slate-400 rounded-md text-white" onClick={openStaking}>
           Stake
         </button>
-        <button className="py-3 bg-slate-400 rounded-md text-white">
-          UnStake
+        <button className="py-3 bg-slate-400 rounded-md text-white" onClick={openUnStaking}>
+          Unstake
         </button>
       </div>
+      <StakeDialog onStake={(amount: number) => onStake(amount)} open={staking} onClose={closeStaking} />
+      <UnStakeDialog onUnStake={onUnStake} open={unStaking} onClose={closeUnStaking} />
     </div>
   );
 }

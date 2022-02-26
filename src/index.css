@@ -12,3 +12,67 @@ body {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  [type='text'],
+  [type='email'],
+  [type='url'],
+  [type='password'],
+  [type='number'],
+  [type='date'],
+  [type='datetime-local'],
+  [type='month'],
+  [type='search'],
+  [type='tel'],
+  [type='time'],
+  [type='week'],
+  [multiple],
+  textarea,
+  select {
+    @apply rounded-lg border-none bg-slate-100 focus:border-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 border-slate-400;
+  }
+
+  [type='checkbox'],
+  [type='radio'] {
+    @apply focus:border-slate-500 focus:ring-0 text-slate-500 cursor-pointer;
+    box-shadow: none!important;
+  }
+
+  [type='checkbox'] {
+    @apply rounded-md;
+  }
+
+  button {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 disabled:opacity-40;
+  }
+  
+  [type='text'].invalid,
+  [type='email'].invalid,
+  [type='url'].invalid,
+  [type='password'].invalid,
+  [type='number'].invalid,
+  [type='date'].invalid,
+  [type='datetime-local'].invalid,
+  [type='month'].invalid,
+  [type='search'].invalid,
+  [type='tel'].invalid,
+  [type='time'].invalid,
+  [type='week'].invalid,
+  [multiple].invalid,
+  textarea.invalid,
+  select.invalid {
+    @apply rounded-lg border-none bg-red-200 focus:border-red-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-red-200 border-red-200;
+  }
+}

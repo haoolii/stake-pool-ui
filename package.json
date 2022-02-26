@@ -46,6 +46,7 @@
     ]
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.4.0",
     "@types/web3": "^1.2.2",
     "assert": "^2.0.0",
     "autoprefixer": "^10.4.2",
@@ -54,6 +55,7 @@
     "https-browserify": "^1.0.0",
     "os-browserify": "^0.3.0",
     "postcss": "^8.4.6",
+    "prettier": "^2.5.1",
     "process": "^0.11.10",
     "react-app-rewired": "^2.2.1",
     "stream-browserify": "^3.0.0",

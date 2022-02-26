@@ -1,11 +1,11 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link, LinkProps, useMatch, useResolvedPath } from "react-router-dom";
-import { RooState } from "../redux/combile";
+import { RootState } from "../redux/combile";
 import { State } from "../redux/web3/web3.reducer";
 
 export default function Header() {
-  const { web3, loading, error, account } = useSelector<RooState, State>(
+  const { web3, loading, error, account } = useSelector<RootState, State>(
     (state) => state.web3
   );
 
