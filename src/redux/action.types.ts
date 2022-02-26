@@ -1,0 +1,18 @@
+export enum ActionType {
+    INIT_WEB3_PENDING = "INIT_WEB3_PENDING",
+    INIT_WEB3_SUCCESS = "INIT_WEB3_SUCCESS",
+    INIT_WEB3_FAIL = "INIT_WEB3_FAIL",
+    GET_ACCOUNT_PENDING = "GET_ACCOUNT_PENDING",
+    GET_ACCOUNT_SUCCESS = "GET_ACCOUNT_SUCCESS",
+    GET_ACCOUNT_FAIL = "GET_ACCOUNT_FAIL",
+    SET_HAO_BALANCE = "SET_HAO_BALANCE",
+    SET_NETWORK_ID = "SET_NETWORK_ID",
+
+    SET_POOL_INFO = "SET_POOL_INFO"
+  }
+  
+  export type Action = {
+    type: ActionType,
+    payload?: any
+  }
+  
