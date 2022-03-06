@@ -1,23 +1,16 @@
-import Web3 from "web3";
-import { Action, ActionType } from "../action.types";
-import { Contract } from 'web3-eth-contract';
+import { Action, ActionType } from '../action.types';
+import Web3 from 'web3';
 
 export interface State {
   web3: Web3 | null;
-  hao: Contract | null;
-  account: string | null;
   networkId: number | null;
-  haoBalance: number;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: State = {
   web3: null,
-  hao: null,
-  account: null,
   networkId: null,
-  haoBalance: 0,
   loading: false,
   error: null,
 };
@@ -32,8 +25,8 @@ const reducer = (state = initialState, action: Action): State => {
     case ActionType.INIT_WEB3_SUCCESS:
       return {
         ...state,
-        web3: action.payload,
         loading: false,
+        web3: action.payload,
       };
     case ActionType.INIT_WEB3_FAIL:
       return {
@@ -41,30 +34,26 @@ const reducer = (state = initialState, action: Action): State => {
         loading: false,
         error: action.payload,
       };
-    case ActionType.GET_ACCOUNT_SUCCESS:
+    case ActionType.INIT_NETWORK_PENDING:
       return {
         ...state,
-        loading: false,
-        account: action.payload,
+        loading: true,
+        error: action.payload,
       };
-    case ActionType.SET_NETWORK_ID:
+    case ActionType.INIT_NETWORK_SUCCESS:
       return {
         ...state,
         networkId: action.payload,
+        loading: false,
       };
-    case ActionType.SET_HAO_BALANCE:
+    case ActionType.INIT_ACCOUNT_FAIL:
       return {
         ...state,
-        haoBalance: action.payload,
+        loading: false,
+        error: action.payload,
       };
-    case ActionType.SET_HAO_CONTRACT:
-      return {
-        ...state,
-        hao: action.payload
-      }
     default:
       return state;
   }
 };
-
 export default reducer;

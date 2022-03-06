@@ -2,12 +2,11 @@ import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/combile';
-import * as Web3Reducer from '../redux/web3/web3.reducer';
-import * as PoolReducer from '../redux/pool/pool.reducer';
-
+import * as Web3Reducer from '../redux/reducers/web3.reducer';
+import * as PoolReducer from '../redux/reducers/pool.reducer';
 interface Props {
   open: boolean;
-  onUnStake: () => void;
+  onUnStake: (amount: number) => void;
   onClose: () => void;
 }
 
@@ -16,32 +15,62 @@ export default function UnStakeDialog({
   onClose,
   onUnStake,
 }: Props): ReactElement {
-  const { web3, loading, error, account, haoBalance } = useSelector<
-    RootState,
-    Web3Reducer.State
-  >((state) => state.web3);
-
-  const { accountStaked } = useSelector<RootState, PoolReducer.State>(
+  const { staked } = useSelector<RootState, PoolReducer.State>(
     (state) => state.pool
   );
 
-  const unStakeBtnRef = useRef<HTMLButtonElement>(null);
+  const { web3 } = useSelector<RootState, Web3Reducer.State>(
+    (state) => state.web3
+  );
 
-  const formmatFromWei = (num: Number) => {
+  const { unStaking } = useSelector<RootState, PoolReducer.State>(
+    (state) => state.pool as any
+  );
+
+  const [unstakeNum, setUnstakeNum] = useState(0);
+  const [dirty, setDirty] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const formatFromWei = (num: Number) => {
     return web3?.utils.fromWei(num.toString(), 'ether');
   };
 
-  const accountStakedFromWei = formmatFromWei(accountStaked);
+  const stakedFromWei = formatFromWei(staked);
 
-  const valid = 0;
+  const handleInput = (value: number) => {
+    setDirty(true);
+    if (value) {
+      setUnstakeNum(`${value}` as any);
+    } else {
+      setUnstakeNum(0);
+    }
+  };
+
+  useEffect(() => {
+    if (!unStaking) {
+      setDirty(false);
+      setUnstakeNum(0);
+    }
+  }, [unStaking]);
+
+  const valid =
+    unstakeNum > 0 && unstakeNum <= (stakedFromWei ? +stakedFromWei : 0);
 
   const innerOnClose = () => {
     onClose();
+    setDirty(false);
+    setUnstakeNum(0);
+  };
+
+  const setMax = () => {
+    if (stakedFromWei) {
+      setUnstakeNum(+stakedFromWei);
+    }
   };
 
   return (
     <Dialog
-      initialFocus={unStakeBtnRef}
+      initialFocus={inputRef}
       open={open}
       onClose={innerOnClose}
       className="fixed inset-0 z-10 overflow-y-auto"
@@ -58,7 +87,7 @@ export default function UnStakeDialog({
           >
             Unstake
           </Dialog.Title>
-          <button className="absolute right-6 top-6" onClick={innerOnClose}>
+          <button className="absolute right-6 top-6">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-4 w-4"
@@ -75,17 +104,34 @@ export default function UnStakeDialog({
             </svg>
           </button>
           <div className="my-4">
-            <div className="text-sm font-semibold p-1 text-center">
-              {accountStakedFromWei
-                ? Number(accountStakedFromWei).toLocaleString()
-                : 0}{' '}
-              Hao
+            <div>
+              <div className="flex justify-between">
+                <div className="text-sm font-semibold p-1">AMOUNT</div>
+                <div className="text-sm font-semibold p-1">
+                  AVAILABLE {Number(stakedFromWei).toLocaleString()}
+                  Hao
+                </div>
+              </div>
+              <div className="relative my-1">
+                <input
+                  ref={inputRef}
+                  type="number"
+                  className={`w-full ${!valid && dirty ? 'invalid' : null}`}
+                  value={unstakeNum}
+                  onChange={(e) => handleInput(e.target.valueAsNumber)}
+                />
+                <button
+                  className="absolute right-3 top-2 rounded bg-slate-300  text-xs px-2 py-1 text-slate-600 hover:text-slate-900"
+                  onClick={setMax}
+                >
+                  MAX
+                </button>
+              </div>
             </div>
           </div>
 
           <div>
             <button
-              ref={unStakeBtnRef}
               type="button"
               className="
                 inline-flex
@@ -101,10 +147,8 @@ export default function UnStakeDialog({
                 rounded-md 
                 hover:bg-slate-400
             "
-              disabled={
-                accountStakedFromWei ? +accountStakedFromWei <= 0 : false
-              }
-              onClick={(e) => onUnStake()}
+              disabled={!valid}
+              onClick={(e) => onUnStake(unstakeNum)}
             >
               Unstake
             </button>
