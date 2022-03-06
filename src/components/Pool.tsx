@@ -1,76 +1,77 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../redux/combile";
-import * as Web3Reducer from "../redux/web3/web3.reducer";
-import * as PoolReducer from "../redux/pool/pool.reducer";
-import { getPool, stake, unstake } from "../redux/pool/pool.action.createors";
-import StakeDialog from "./StakeDialog";
-import { ActionType } from "../redux/action.types";
-import UnStakeDialog from "./UnStakeDialog";
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../redux/combile';
+
+import * as HaoReducer from '../redux/reducers/hao.reducer';
+import * as PoolReducer from '../redux/reducers/pool.reducer';
+import * as Web3Reducer from '../redux/reducers/web3.reducer';
+
+import * as PoolCreators from '../redux/creators/pool.action.creators';
+
+import StakeDialog from './StakeDialog';
+import { ActionType } from '../redux/action.types';import UnStakeDialog from './UnStakeDialog';
 
 export default function Pool() {
   const dispatch = useDispatch();
 
-  const { web3, loading, error, account, haoBalance } = useSelector<
+  const { totalStaked, rewardRate, staked, earned, staking, unStaking, loading, error } = useSelector<
     RootState,
-    Web3Reducer.State
-  >((state) => state.web3);
+    PoolReducer.State
+  >((state) => state.pool as any);
 
-  const { apr, totalStaked, dailyReward, accountStaked, accountReward, staking, unStaking } =
-    useSelector<RootState, PoolReducer.State>((state) => state.pool);
+  const { web3 } = useSelector<RootState, Web3Reducer.State>(
+    (state) => state.web3 as any
+  );
 
-  let aprDisplay = (apr * 100).toPrecision(4);
+  const { balance } = useSelector<RootState, HaoReducer.State>(
+    (state) => state.hao as any
+  );
 
-  const formmatFromWei = (num: Number) => {
-    return web3?.utils.fromWei(num.toString(), "ether");
+  const formatFromWei = (num: Number) => {
+    return web3?.utils.fromWei(num.toString(), 'ether');
   };
 
-  const haoBalanceFromWei = formmatFromWei(haoBalance);
-  const totalStakedFromWei = formmatFromWei(totalStaked);
-  const dailyRewardFromWei = formmatFromWei(dailyReward);
-  const accountStakedFromWei = formmatFromWei(accountStaked);
-  const accountRewardFromWei = formmatFromWei(accountReward);
-
-  useEffect(() => {
-    setTimeout(() => dispatch(getPool()), 500);
-    return () => {};
-  }, [web3]);
+  const balanceFromWei = formatFromWei(balance);
+  const totalStakedFromWei = formatFromWei(totalStaked);
+  const rewardRateFromWei = formatFromWei(rewardRate);
+  const stakedFromWei = formatFromWei(staked);
+  const earnedFromWei = formatFromWei(earned);
 
   const onStake = (amount: number) => {
     if (web3) {
-      dispatch(stake(web3.utils.toWei(`${amount}`)));
+      dispatch(PoolCreators.stake(web3.utils.toWei(`${amount}`)));
     }
-  }
+  };
 
-  const onUnStake = () => {
+  const onUnStake = (amount: number) => {
     if (web3) {
-      dispatch(unstake());
+      dispatch(PoolCreators.unstake(web3.utils.toWei(`${amount}`)));
     }
-  }
+  };
 
   const closeStaking = () => {
     dispatch({
-      type: ActionType.CLOSE_STAKING
-    })
-  }
+      type: ActionType.CLOSE_STAKING,
+    });
+  };
 
   const closeUnStaking = () => {
     dispatch({
-      type: ActionType.CLOSE_UNSTAKING
-    })
-  }
+      type: ActionType.CLOSE_UNSTAKING,
+    });
+  };
 
   const openStaking = () => {
     dispatch({
-      type: ActionType.OPEN_STAKING
-    })
-  }
+      type: ActionType.OPEN_STAKING,
+    });
+  };
 
   const openUnStaking = () => {
     dispatch({
-      type: ActionType.OPEN_UNSTAKING
-    })
-  }
+      type: ActionType.OPEN_UNSTAKING,
+    });
+  };
 
   return (
     <div className="bg-slate-200/40  backdrop-blur rounded-2xl h-[478px] w-[468px] p-8 space-y-4 flex flex-col">
@@ -82,12 +83,12 @@ export default function Pool() {
         <div className="flex flex-1 flex-col">
           <div className="text-xs font-bold tracking-wider">DAILY REWARD</div>
           <div className="text-xs font-medium">
-            {dailyRewardFromWei} Hao / Day
+            {(Number(rewardRateFromWei) * 86400).toLocaleString()} Hao / Day
           </div>
         </div>
         <div className="flex ml-10 items-end flex-col">
           <div className="text-xs font-bold tracking-wider">APR</div>
-          <div className="text-xs font-medium">{aprDisplay}%</div>
+          {/* <div className="text-xs font-medium">{aprDisplay}%</div> */}
         </div>
       </div>
 
@@ -97,7 +98,7 @@ export default function Pool() {
             AVAILABLE IN WALLET
           </div>
           <div className="text-2xl font-medium">
-            {haoBalanceFromWei ? Number(haoBalanceFromWei).toLocaleString() : 0}
+            {Number(balanceFromWei).toLocaleString()}
             <span className="text-sm font-medium ml-2">Hao</span>
           </div>
         </div>
@@ -105,9 +106,7 @@ export default function Pool() {
         <div>
           <div className="text-xs font-bold tracking-wider">TOTAL STAKED</div>
           <div className="text-2xl font-medium">
-            {haoBalanceFromWei
-              ? Number(accountStakedFromWei).toLocaleString()
-              : 0}
+            {Number(stakedFromWei).toLocaleString()}
             <span className="text-sm font-medium ml-2">Hao</span>
           </div>
         </div>
@@ -121,9 +120,7 @@ export default function Pool() {
             CLAIMABLE REWARDS
           </div>
           <div className="text-xl font-medium text-white">
-            {accountRewardFromWei
-              ? Number(accountRewardFromWei).toLocaleString()
-              : 0}
+            {earnedFromWei}
             <span className="text-sm ml-2">Hao</span>
           </div>
         </div>
@@ -133,15 +130,21 @@ export default function Pool() {
       </div>
 
       <div className="flex flex-col space-y-4">
-        <button className="py-3 bg-slate-400 rounded-md text-white" onClick={openStaking}>
+        <button
+          className="py-3 bg-slate-400 rounded-md text-white"
+          onClick={openStaking}
+        >
           Stake
         </button>
-        <button className="py-3 bg-slate-400 rounded-md text-white" onClick={openUnStaking}>
+        <button
+          className="py-3 bg-slate-400 rounded-md text-white"
+          onClick={openUnStaking}
+        >
           Unstake
         </button>
       </div>
       <StakeDialog onStake={(amount: number) => onStake(amount)} open={staking} onClose={closeStaking} />
-      <UnStakeDialog onUnStake={onUnStake} open={unStaking} onClose={closeUnStaking} />
+      <UnStakeDialog onUnStake={(amount: number) => onUnStake(amount)} open={unStaking} onClose={closeUnStaking} />
     </div>
   );
 }

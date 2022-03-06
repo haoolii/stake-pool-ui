@@ -2,8 +2,9 @@ import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/combile';
-import * as Web3Reducer from '../redux/web3/web3.reducer';
-import * as PoolReducer from '../redux/pool/pool.reducer';
+import * as HaoReducer from '../redux/reducers/hao.reducer';
+import * as Web3Reducer from '../redux/reducers/web3.reducer';
+import * as PoolReducer from '../redux/reducers/pool.reducer';
 
 interface Props {
   open: boolean;
@@ -16,24 +17,27 @@ export default function StakeDialog({
   onClose,
   onStake,
 }: Props): ReactElement {
-  const { web3, loading, error, account, haoBalance } = useSelector<
-    RootState,
-    Web3Reducer.State
-  >((state) => state.web3);
+  const { balance } = useSelector<RootState, HaoReducer.State>(
+    (state) => state.hao as any
+  );
+
+  const { web3 } = useSelector<RootState, Web3Reducer.State>(
+    (state) => state.web3 as any
+  );
 
   const { staking } = useSelector<RootState, PoolReducer.State>(
-    (state) => state.pool
+    (state) => state.pool as any
   );
 
   const [stakeNum, setStakeNum] = useState(0);
   const [dirty, setDirty] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const formmatFromWei = (num: Number) => {
+  const formatFromWei = (num: Number) => {
     return web3?.utils.fromWei(num.toString(), 'ether');
   };
 
-  const haoBalanceFromWei = formmatFromWei(haoBalance);
+  const balanceFromWei = formatFromWei(balance);
 
   const handleInput = (value: number) => {
     setDirty(true);
@@ -52,7 +56,7 @@ export default function StakeDialog({
   }, [staking]);
 
   const valid =
-    stakeNum > 0 && stakeNum <= (haoBalanceFromWei ? +haoBalanceFromWei : 0);
+    stakeNum > 0 && stakeNum <= (balanceFromWei ? +balanceFromWei : 0);
 
   const innerOnClose = () => {
     onClose();
@@ -61,8 +65,8 @@ export default function StakeDialog({
   };
 
   const setMax = () => {
-    if (haoBalanceFromWei) {
-      setStakeNum(+haoBalanceFromWei);
+    if (balanceFromWei) {
+      setStakeNum(+balanceFromWei);
     }
   };
 
@@ -107,9 +111,7 @@ export default function StakeDialog({
                 <div className="text-sm font-semibold p-1">AMOUNT</div>
                 <div className="text-sm font-semibold p-1">
                   AVAILABLE{' '}
-                  {haoBalanceFromWei
-                    ? Number(haoBalanceFromWei).toLocaleString()
-                    : 0}{' '}
+                  {balanceFromWei ? Number(balanceFromWei).toLocaleString() : 0}{' '}
                   Hao
                 </div>
               </div>

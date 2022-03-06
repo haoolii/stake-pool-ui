@@ -2,18 +2,13 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Link, LinkProps, useMatch, useResolvedPath } from "react-router-dom";
 import { RootState } from "../redux/combile";
-import { State } from "../redux/web3/web3.reducer";
+import { State } from '../redux/reducers/account.reducer';
 
 export default function Header() {
-  const { web3, loading, error, account } = useSelector<RootState, State>(
-    (state) => state.web3
+  const { account, loading, error } = useSelector<RootState, State>(
+    (state) => state.account
   );
 
-  const accountEllipsis = `${account?.slice(0, 6)}...${account
-    ?.split("")
-    .reverse()
-    .join("")
-    .slice(0, 4)}`;
 
   return (
     <div className="fixed top-0 container mx-auto">
@@ -32,9 +27,10 @@ export default function Header() {
           </div>
         </div>
         <div className="flex py-4">
+          
           {account ? (
             <button className="w-36 text-ellipsis overflow-hidden leading-5 text-sm rounded-lg text-slate-600 font-bold hover:bg-slate-200 py-2 px-4">
-              {accountEllipsis}
+              {account}
             </button>
           ) : (
             <button className="w-36 leading-5 text-sm rounded-lg text-slate-600 font-bold hover:bg-slate-200 py-2 px-4">
