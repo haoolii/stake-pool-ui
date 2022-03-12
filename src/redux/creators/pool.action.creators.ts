@@ -1,6 +1,10 @@
-import { RootState } from './../combile';
 import { Dispatch } from 'redux';
-import { Action, ActionType } from '../action.types';
+
+import {
+  Action,
+  ActionType,
+} from '../action.types';
+import { RootState } from '../combile';
 import * as HaoCreators from './hao.action.creators';
 
 export const getPoolInfo = () => {
@@ -73,3 +77,19 @@ export const unstake = (amount: string) => {
     }
   }
 };
+
+export const getReward = () => {
+  return async (dispatch: Dispatch<Action>, getState: () => RootState) => {
+    const state = getState();
+    const { pool } = state.contract;
+    const { account } = state.account;
+    if (pool) {
+      await pool.methods.getReward().send({ from: account });
+      dispatch(HaoCreators.getHaoBalance() as any);
+      dispatch(getPoolInfo() as any);
+      dispatch({
+        type: ActionType.CLOSE_CLAIMING,
+      });
+    }
+  }
+}

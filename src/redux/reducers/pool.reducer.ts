@@ -1,4 +1,7 @@
-import { Action, ActionType } from '../action.types';
+import {
+  Action,
+  ActionType,
+} from '../action.types';
 
 export interface State {
   apr: number;
@@ -8,6 +11,7 @@ export interface State {
   earned: number;
   staking: boolean;
   unStaking: boolean;
+  claiming: boolean;
   loading: boolean;
   error: string | null;
 }
@@ -20,6 +24,7 @@ const initialState: State = {
   earned: 0,
   staking: false,
   unStaking: false,
+  claiming: false,
   loading: false,
   error: null,
 };
@@ -63,6 +68,16 @@ const reducer = (state = initialState, action: Action): State => {
         ...state,
         unStaking: false,
       };
+    case ActionType.OPEN_CLAIMING:
+      return {
+        ...state,
+        claiming: true
+      }
+    case ActionType.CLOSE_CLAIMING:
+        return {
+          ...state,
+          claiming: false
+        }
     default:
       return state;
   }

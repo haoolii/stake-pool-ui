@@ -1,22 +1,28 @@
 import './App.css';
-import Header from './components/Header';
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Routes, Route, Link } from 'react-router-dom';
 
-import * as Web3Creators from './redux/creators/web3.action.creators';
+import { useEffect } from 'react';
+
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import {
+  Route,
+  Routes,
+} from 'react-router-dom';
+
+import Header from './components/Header';
+import { Home } from './page/Home';
+import Stake from './page/Stake';
+import { RootState } from './redux/combile';
 import * as AccountCreators from './redux/creators/account.action.creators';
 import * as ContractCreators from './redux/creators/contract.action.creators';
 import * as HaoCreators from './redux/creators/hao.action.creators';
 import * as PoolCreators from './redux/creators/pool.action.creators';
-
-import * as Web3Reducer from './redux/reducers/web3.reducer';
+import * as Web3Creators from './redux/creators/web3.action.creators';
 import * as AccountReducer from './redux/reducers/account.reducer';
 import * as ContractReducer from './redux/reducers/contract.reducer';
-
-import Stake from './page/Stake';
-import { Home } from './page/Home';
-import { RootState } from './redux/combile';
+import * as Web3Reducer from './redux/reducers/web3.reducer';
 
 function App() {
   const dispatch = useDispatch();
@@ -60,7 +66,7 @@ function App() {
   return (
     <>
       <div className="h-full relative">
-        <div className="container mx-auto h-full w-full relative z-10">
+        <div className="container mx-auto h-full w-full relative z-10 px-4">
           <Header />
           <div className="flex justify-center items-center h-full">
             <Routes>

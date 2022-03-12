@@ -1,10 +1,20 @@
-import React, { ReactElement, useEffect, useRef, useState } from 'react';
-import { Dialog } from '@headlessui/react';
+import React, {
+  ReactElement,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+
 import { useSelector } from 'react-redux';
+
+import { Dialog } from '@headlessui/react';
+
 import { RootState } from '../redux/combile';
 import * as HaoReducer from '../redux/reducers/hao.reducer';
-import * as Web3Reducer from '../redux/reducers/web3.reducer';
 import * as PoolReducer from '../redux/reducers/pool.reducer';
+import * as Web3Reducer from '../redux/reducers/web3.reducer';
+import { numberFormat } from '../utils/format';
+import Button from './base/Button';
 
 interface Props {
   open: boolean;
@@ -89,7 +99,7 @@ export default function StakeDialog({
           >
             Stake
           </Dialog.Title>
-          <button className="absolute right-6 top-6" onClick={innerOnClose}>
+          <Button type='icon' className="absolute right-5 top-5" onClick={innerOnClose}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-4 w-4"
@@ -104,14 +114,14 @@ export default function StakeDialog({
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-          </button>
+          </Button>
           <div className="my-4">
             <div>
               <div className="flex justify-between">
                 <div className="text-sm font-semibold p-1">AMOUNT</div>
                 <div className="text-sm font-semibold p-1">
                   AVAILABLE{' '}
-                  {balanceFromWei ? Number(balanceFromWei).toLocaleString() : 0}{' '}
+                  {numberFormat(Number(balanceFromWei))}{' '}
                   Hao
                 </div>
               </div>
@@ -134,27 +144,14 @@ export default function StakeDialog({
           </div>
 
           <div>
-            <button
-              type="button"
-              className="
-                inline-flex
-                justify-center
-                w-full
-                py-2
-                text-sm 
-                font-medium 
-                text-white
-                bg-slate-400
-                border
-                border-transparent 
-                rounded-md 
-                hover:bg-slate-400
-            "
+            <Button
+              type='primary'
+              className='w-full'
               disabled={!valid}
               onClick={(e) => onStake(stakeNum)}
             >
               Stake
-            </button>
+            </Button>
           </div>
         </div>
       </div>
