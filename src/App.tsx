@@ -24,6 +24,8 @@ import * as AccountReducer from './redux/reducers/account.reducer';
 import * as ContractReducer from './redux/reducers/contract.reducer';
 import * as Web3Reducer from './redux/reducers/web3.reducer';
 
+declare const window: any;
+
 function App() {
   const dispatch = useDispatch();
 
@@ -42,6 +44,24 @@ function App() {
 
   useEffect(() => {
     dispatch(Web3Creators.init());
+
+    const accountsChangedCb = function (accounts: string[]) {
+      console.log('accountsChanges', accounts);
+      dispatch(Web3Creators.init());
+    };
+
+    const networkChangedCb = function (networkId: string) {
+      console.log('networkChanged', networkId);
+      dispatch(Web3Creators.init());
+    };
+
+    window.ethereum.on('accountsChanged', accountsChangedCb);
+
+    window.ethereum.on('networkChanged', networkChangedCb);
+
+    return () => {
+      window.ethereum.removeAllListeners();
+    };
   }, []);
 
   useEffect(() => {
@@ -55,7 +75,7 @@ function App() {
       dispatch(ContractCreators.init());
     }
   }, [networkId]);
-  
+
   useEffect(() => {
     if (hao && account) {
       dispatch(HaoCreators.getHaoBalance());

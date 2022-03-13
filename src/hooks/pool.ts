@@ -2,6 +2,7 @@
 import { useSelector } from 'react-redux';
 
 import { RootState } from '../redux/combile';
+import * as AccountReducer from '../redux/reducers/account.reducer';
 import * as HaoReducer from '../redux/reducers/hao.reducer';
 import * as PoolReducer from '../redux/reducers/pool.reducer';
 import * as Web3Reducer from '../redux/reducers/web3.reducer';
@@ -26,6 +27,11 @@ export default function usePool() {
   const { balance } = useSelector<RootState, HaoReducer.State>(
     (state) => state.hao as any
   );
+
+  const { account } = useSelector<RootState, AccountReducer.State>(
+    (state) => state.account as any
+  );
+
   return {
     totalStaked,
     rewardRate,
@@ -38,5 +44,6 @@ export default function usePool() {
     error: '',
     web3,
     balance,
+    account
   };
 }

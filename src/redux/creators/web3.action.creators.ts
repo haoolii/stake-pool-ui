@@ -1,6 +1,10 @@
-import Web3 from 'web3';
-import { Action, ActionType } from './../action.types';
 import { Dispatch } from 'redux';
+import Web3 from 'web3';
+
+import {
+  Action,
+  ActionType,
+} from '../action.types';
 
 declare const window: any;
 

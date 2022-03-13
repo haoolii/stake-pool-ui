@@ -26,7 +26,8 @@ export default function Pool() {
     unStaking,
     web3,
     balance,
-    claiming
+    claiming,
+    account,
   } = usePool();
 
   const balanceFromWei = fromWei(web3!, balance);
@@ -35,6 +36,7 @@ export default function Pool() {
   const stakedFromWei = fromWei(web3!, staked);
   const earnedFromWei = fromWei(web3!, earned);
   const dailyReward = Number(rewardRateFromWei) * 86400;
+
   const onStake = (amount: number) => {
     if (web3) {
       dispatch(PoolCreators.stake(web3.utils.toWei(`${amount}`)));
@@ -51,7 +53,7 @@ export default function Pool() {
     if (web3) {
       dispatch(PoolCreators.getReward());
     }
-  }
+  };
 
   const closeStaking = () => {
     dispatch({
@@ -79,34 +81,41 @@ export default function Pool() {
 
   const openClaiming = () => {
     dispatch({
-      type: ActionType.OPEN_CLAIMING
-    })
-  }
+      type: ActionType.OPEN_CLAIMING,
+    });
+  };
 
   const closeClaiming = () => {
     dispatch({
-      type: ActionType.CLOSE_CLAIMING
-    })
-  }
+      type: ActionType.CLOSE_CLAIMING,
+    });
+  };
 
-  const aprDisplay = (dailyReward === 0 || +totalStakedFromWei === 0 ) ? 0: (((dailyReward * 365) / +totalStakedFromWei) * 100) ;
+  const aprDisplay =
+    dailyReward === 0 || +totalStakedFromWei === 0
+      ? 0
+      : ((dailyReward * 365) / +totalStakedFromWei) * 100;
 
   return (
-    <div className="bg-slate-200/40  backdrop-blur rounded-2xl md:h-[478px] w-full md:w-[468px] p-8 space-y-4 flex flex-col">
+    <div className="bg-slate-200/40  backdrop-blur rounded-2xl w-full md:w-[468px] p-8 space-y-4 flex flex-col">
       <div className="flex space-y-2 flex-col md:space-y-0 md:flex-row justify-between border-b border-slate-500 pb-4">
-        <div className='flex flex-1'>
+        <div className="flex flex-1">
           <div className="flex flex-1  flex-col">
             <div className="text-xs font-bold tracking-wider">TOTAL STAKED</div>
-            <div className="text-xs font-medium">{numberFormat(+totalStakedFromWei)} Hao</div>
+            <div className="text-xs font-medium">
+              {account ? numberFormat(+totalStakedFromWei) : '--'} Hao
+            </div>
           </div>
           <div className="flex flex-1 flex-col">
             <div className="text-xs font-bold tracking-wider">DAILY REWARD</div>
-            <div className="text-xs font-medium">{numberFormat(dailyReward)} Hao / Day</div>
+            <div className="text-xs font-medium">
+              {account ? numberFormat(dailyReward) : '-'} Hao / Day
+            </div>
           </div>
         </div>
         <div className="flex md:ml-10 md:items-end flex-col">
           <div className="text-xs font-bold tracking-wider">APR</div>
-          <div className="text-xs font-medium">{numberFormat(aprDisplay)}%</div>
+          <div className="text-xs font-medium">{account ? numberFormat(aprDisplay) : '--'}%</div>
         </div>
       </div>
 
@@ -116,7 +125,7 @@ export default function Pool() {
             AVAILABLE IN WALLET
           </div>
           <div className="text-2xl font-medium">
-            {numberFormat(Number(balanceFromWei))}
+            {account ? numberFormat(Number(balanceFromWei)) : '-'}
             <span className="text-sm font-medium ml-2">Hao</span>
           </div>
         </div>
@@ -124,7 +133,7 @@ export default function Pool() {
         <div>
           <div className="text-xs font-bold tracking-wider">TOTAL STAKED</div>
           <div className="text-2xl font-medium">
-            {numberFormat(Number(stakedFromWei))}
+            {account ? numberFormat(Number(stakedFromWei)) : '-'}
             <span className="text-sm font-medium ml-2">Hao</span>
           </div>
         </div>
@@ -132,27 +141,45 @@ export default function Pool() {
 
       <div className="flex-1"></div>
 
-      <div className="bg-slate-400 rounded-md px-4 py-3 flex flex-col space-y-2 md:space-y-0 md:flex-row justify-between items-center">
-        <div className='w-full'>
-          <div className="font-bold text-white tracking-wider">
-            CLAIMABLE REWARDS
+      {account ? (
+        <div className='flex flex-col space-y-4'>
+          <div className="bg-slate-400 rounded-md px-4 py-3 flex flex-col space-y-2 md:space-y-0 md:flex-row justify-between items-center">
+            <div className="w-full">
+              <div className="font-bold text-white tracking-wider">
+                CLAIMABLE REWARDS
+              </div>
+              <div className="text-xl font-medium text-white">
+                {numberFormat(Number(earnedFromWei))}
+                <span className="text-sm ml-2">Hao</span>
+              </div>
+            </div>
+            <Button
+              type="primary"
+              disabled={Number(earnedFromWei) === 0}
+              onClick={openClaiming}
+              className="bg-slate-500 w-full md:w-auto"
+            >
+              Claim
+            </Button>
           </div>
-          <div className="text-xl font-medium text-white">
-            {numberFormat(Number(earnedFromWei))}
-            <span className="text-sm ml-2">Hao</span>
+          <div className="flex flex-col space-y-4">
+            <Button type="primary" onClick={openStaking}>
+              Stake
+            </Button>
+            <Button
+              onClick={openUnStaking}
+              disabled={Number(totalStakedFromWei) === 0}
+            >
+              Unstake
+            </Button>
           </div>
         </div>
-        <Button type='primary' onClick={openClaiming} className='bg-slate-500 w-full md:w-auto'>
-          Claim
+      ) : (
+        <Button type="primary">
+          Connect Wallet
         </Button>
-      </div>
+      )}
 
-      <div className="flex flex-col space-y-4">
-        <Button type="primary" onClick={openStaking}>
-          Stake
-        </Button>
-        <Button onClick={openUnStaking}>Unstake</Button>
-      </div>
       <ClaimDialog
         open={claiming}
         onClaiming={() => onClaiming()}
