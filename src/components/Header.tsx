@@ -8,6 +8,7 @@ import {
   useResolvedPath,
 } from 'react-router-dom';
 
+import haoJpeg from '../assets/hao.jpeg';
 import { RootState } from '../redux/combile';
 import { State } from '../redux/reducers/account.reducer';
 
@@ -27,12 +28,22 @@ export default function Header() {
     <div className="fixed top-0 container mx-auto">
       <div className="w-full flex justify-between">
         <div className="flex space-x-4 py-4">
-          <CustomLink to="/">Logo</CustomLink>
+          <CustomLink to="/">
+            <div className='flex items-center space-x-2 '>
+
+            <div className="rounded-full overflow-hidden">
+              <img width="25" height="25" alt='logo' src={haoJpeg}/>  
+            </div>
+            <div className='text-sm text-slate-600 font-bold'>
+              hao
+            </div>
+            </div>
+          </CustomLink>
           <CustomLink to="/stake">Stake</CustomLink>
           <a
             href="https://unnhao.gitbook.io/hao-stake-pool/"
             target="_blank"
-            className="leading-5 text-sm rounded-lg text-slate-600 font-bold hover:bg-slate-200 py-2 px-4"
+            className="leading-5 text-sm rounded-lg text-slate-600 font-bold hover:bg-slate-200 py-2 px-4 flex items-center"
           >
             Docs
           </a>

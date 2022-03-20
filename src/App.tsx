@@ -55,9 +55,9 @@ function App() {
       dispatch(Web3Creators.init());
     };
 
-    window.ethereum.on('accountsChanged', accountsChangedCb);
+    window.ethereum?.on('accountsChanged', accountsChangedCb);
 
-    window.ethereum.on('networkChanged', networkChangedCb);
+    window.ethereum?.on('networkChanged', networkChangedCb);
 
     return () => {
       window.ethereum.removeAllListeners();
